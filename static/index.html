@@ -1,17 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Lilly JS recruitment task</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-<div>
-    <span class="spinner"></span>
-</div>
+    <div>
+        <span class="spinner" id="loader"></span>
+        <!-- spinner element with ID "loader" -->
+    </div>
 
-<canvas id="chart" width="1000" height="600"></canvas>
+    <canvas id="chart" width="1000" height="600"></canvas>
 
-<script src="scripts.js" defer></script>
+    <script src="scripts.js" defer></script>
 </body>
+
+<script>
+    // fetching data after a delay
+    setTimeout(() => {
+        fetchStocks();
+    }, 3000);
+
+    // function to fetch list of available stocks and their data
+    function fetchStocks() {
+        fetch('http://localhost:3000/stocks/', { method: 'GET', mode: 'cors' })
+            .then(response => response.json())
+            .then(data => {
+               console.log(data) // check if stock symbols exist
+                if (data.stockSymbols) {
+                    console.log(data.stockSymbols); // logging available stock symbols
+                    // iterating through each stock symbol
+                    for (var i = 0; i < data.stockSymbols.length; i++) {
+                        fetchStockData(data.stockSymbols[i]); // ietching data for each stock
+                    }
+                } else {
+                    console.log(data.error); // logging error if fetching stock symbols fails
+                }
+            });
+    }
+
+    // function to fetch data for a specific stock
+    function fetchStockData(stockSymbol) {
+        fetch('http://localhost:3000/stocks/' + stockSymbol, { method: 'GET', mode: 'cors' })
+            .then(response => response.json())
+            .then(stockData => {
+                console.log(stockData); // logging data for the fetched stock
+                hideSpinner(); // hiding spinner after data is loaded
+            });
+    }
+
+    // function to hide the spinner
+    function hideSpinner() {
+        document.getElementById('loader').style.display = "none";
+    }
+</script>
+
 </html>
